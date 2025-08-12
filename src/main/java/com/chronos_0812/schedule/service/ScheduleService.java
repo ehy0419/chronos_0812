@@ -4,6 +4,7 @@ import com.chronos_0812.schedule.dto.get.ScheduleGetAllResponse;
 import com.chronos_0812.schedule.dto.get.ScheduleGetOneResponse;
 import com.chronos_0812.schedule.dto.save.ScheduleSaveRequest;
 import com.chronos_0812.schedule.dto.save.ScheduleSaveResponse;
+import com.chronos_0812.schedule.dto.update.ScheduleUpdateRequest;
 import com.chronos_0812.schedule.entity.Schedule;
 import com.chronos_0812.schedule.repository.ScheduleRepository;
 import com.chronos_0812.user.entity.User;
@@ -130,12 +131,31 @@ public class ScheduleService {
      * @return
      */
 
+    /**
+     * 일정 수정 (부분 업데이트)
+     */
     @Transactional
-    public ScheduleGetOneResponse updateSchedule(long scheduleId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalArgumentException("일정을 찾을 수 없습니다.")
-        );
-        return ScheduleGetOneResponse.from(scheduleRepository.save(schedule));
+    public ScheduleGetOneResponse updateSchedule(long scheduleId, ScheduleUpdateRequest scheduleUpdateRequest) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new IllegalArgumentException("일정을 찾을 수 없습니다."));
+
+        // 부분 업데이트 적용
+        if (scheduleUpdateRequest.getTitle() != null) {
+            if (scheduleUpdateRequest.getTitle().isEmpty()) {
+                throw new IllegalArgumentException("제목은 비어 있을 수 없습니다.");
+            }
+            schedule.changeTitle(scheduleUpdateRequest.getTitle());
+        }
+
+        if (scheduleUpdateRequest.getContent() != null) {
+            if (scheduleUpdateRequest.getContent().isEmpty()) {
+                throw new IllegalArgumentException("내용은 비어 있을 수 없습니다.");
+            }
+            schedule.changeContent(scheduleUpdateRequest.getContent());
+        }
+
+        // save() 불필요: 영속 엔티티 변경 감지
+        return ScheduleGetOneResponse.from(schedule);
     }
 
     /**
