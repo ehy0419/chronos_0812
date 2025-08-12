@@ -5,8 +5,12 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+/**
+ * 단건 조회 응답 DTO
+ */
+
 @Getter
-public class ScheduleGetOneResponse {
+public class ScheduleGetOneResponse {       /// 단건 조회 응답
 
     private final Long id;
     private final String title;
@@ -19,7 +23,6 @@ public class ScheduleGetOneResponse {
      * private final User author;
      * 유저 (작성자) author를 그대로 노출시지키 않고 DTO에 작성자의 이름만 남기자.
      */
-
 
     public ScheduleGetOneResponse(
             Long id,

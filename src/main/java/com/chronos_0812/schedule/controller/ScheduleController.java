@@ -14,11 +14,20 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 일정 CRUD API
+ *  - POST   /schedules                 : 생성
+ *  - GET    /schedules                 : 전체 조회
+ *  - GET    /schedules/{scheduleId}    : 단건 조회
+ *  - PUT    /schedules/{scheduleId}    : 수정
+ *  - DELETE /schedules/{scheduleId}    : 삭제
+ */
+
 @RestController
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
-// @RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 @RequestMapping("/schedules")
 public class ScheduleController {
+
     private final ScheduleService scheduleService;
 
     /**
@@ -42,24 +51,24 @@ public class ScheduleController {
      */
     @GetMapping
     public ResponseEntity<List<ScheduleGetAllResponse>> getAllSchedules(
-            @RequestParam(value = "authorId", required = false) Long authorId
+            @RequestParam(value = "scheduleId", required = false) Long authorId
             // 수정 전 : @RequestBody(required = false) String author
             // 수정 후 : @RequestParam(value = "authorId", required = false) Long authorId
             // 수정 이유 : GET에 @RequestBody 사용 제거: 조회 필터는 @RequestParam이 적절
     ) {
-        return ResponseEntity.ok(scheduleService.findSchedules(authorId));
+        return ResponseEntity.ok(scheduleService.findAllSchedules(authorId));     // 에러 : findAllSchedules(scheduleId) 의 타입 Long
     }
     // 오류 : return ResponseEntity.ok(scheduleService.findSchedules(author));
     // 오류 수정 : return ResponseEntity.ok(scheduleService.findSchedules(authorId));
-    // 오류 원인 : 메서드 시그니처/매핑 불일치
-    // findSchedules(String) → findSchedules(Long authorId)로 맞춤
+    // 오류 원인 : scheduleService.findAllSchedules(...) 메서드 시그니처와 getAllSchedules() 컨트롤러에서 넘겨주는 인자의 타입이 맞지 않아서
+    // 에러 메시지 : 'com.chronos_0812.schedule.service.ScheduleService'의 'findAllSchedules(com.chronos_0812.user.entity.User)'을(를) '(java.lang.Long)'에 적용할 수 없습니다
 
     /**
      * 단건 일정 조회
      * 예) /schedules/10
      */
 
-    @GetMapping
+    @GetMapping("/{scheduleId}")
     // 수정 전 :@GetMapping
     // 수정 후 :@GetMapping("/{scheduleId}")
     // 수정 이유 : 중복 @GetMapping(경로 동일) 제거: 단건 조회는 @GetMapping("/{scheduleId}")
@@ -75,7 +84,7 @@ public class ScheduleController {
      * Body(JSON) : {"title":"새 제목"} 또는 {"content":"새 내용"}
      */
 
-    @PutMapping
+    @PutMapping("/{scheduleId}")
     public ResponseEntity<ScheduleGetOneResponse> updateSchedule(
             @PathVariable long scheduleId,
             @Valid @RequestBody ScheduleUpdateRequest scheduleUpdateRequest
@@ -92,7 +101,7 @@ public class ScheduleController {
      * 일정 삭제
      * 예) DELETE /schedules/10
      */
-    @DeleteMapping
+    @DeleteMapping("/{scheduleId}")
     public void deleteSchedule(
             @PathVariable long scheduleId
     ) {

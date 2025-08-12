@@ -1,6 +1,6 @@
 package com.chronos_0812.user.entity;
 
-import com.chronos_0812.common.BaseEntity;
+import com.chronos_0812.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

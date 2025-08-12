@@ -5,8 +5,13 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+/**
+ * 목록 조회 응답 DTO
+ * (필요 필드만 노출)
+ */
+
 @Getter
-public class ScheduleGetAllResponse {
+public class ScheduleGetAllResponse {       ///  전체 조회 응답
 
     private final Long id;
     private final String title;
@@ -31,7 +36,6 @@ public class ScheduleGetAllResponse {
     }
 
     // 정적 팩토리 : 엔티티 -> DTO 매핑 팩토리
-    // 선택: 엔티티 -> DTO 매핑 팩토리
     public static ScheduleGetAllResponse from(Schedule schedule) {
         return new ScheduleGetAllResponse(
                 schedule.getId(),
