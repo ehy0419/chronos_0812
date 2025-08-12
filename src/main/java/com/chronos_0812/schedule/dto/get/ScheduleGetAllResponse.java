@@ -1,6 +1,6 @@
 package com.chronos_0812.schedule.dto.get;
 
-import com.chronos_0812.user.entity.User;
+import com.chronos_0812.schedule.entity.Schedule;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -28,5 +28,18 @@ public class ScheduleGetAllResponse {
         this.authorName = authorName;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
+    }
+
+    // 정적 팩토리 : 엔티티 -> DTO 매핑 팩토리
+    // 선택: 엔티티 -> DTO 매핑 팩토리
+    public static ScheduleGetAllResponse from(Schedule schedule) {
+        return new ScheduleGetAllResponse(
+                schedule.getId(),
+                schedule.getTitle(),
+                schedule.getContent(),
+                schedule.getAuthor().getUsername(),
+                schedule.getCreatedAt(),
+                schedule.getModifiedAt()
+        );
     }
 }
