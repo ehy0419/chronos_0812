@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "schedules")                              // 일정 명찰 설정
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)      // JPA 규약상 기본 생성자(무인자)가 반드시 필요
 public class Schedule extends BaseEntity {
