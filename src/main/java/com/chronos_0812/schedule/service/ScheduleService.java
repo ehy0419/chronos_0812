@@ -25,40 +25,53 @@ public class ScheduleService {
 
     /**
      * 일정 저장(생성)
-     * @param scheduleSaveResponse
-     * @return
      */
 
     @Transactional
-    public ScheduleSaveResponse save(ScheduleSaveRequest scheduleSaveResponse) {
-        if(scheduleSaveResponse.getAuthor() == null) {
-            throw new IllegalStateException("작성자명은 필수값입니다.");
-        }
-        if(scheduleSaveResponse.getTitle() == null) {
-            throw new IllegalStateException("일정 제목은 필수값입니다.");
-        }
-        if(scheduleSaveResponse.getContent() == null) {
-            throw new IllegalStateException("일정 내용은 필수값입니다.");
-        }
+    public ScheduleSaveResponse save(ScheduleSaveRequest scheduleSaveRequest) {
+        // 유효성 검사는 컨트롤러 @Valid에서 처리
+        // 서비스에서는 비즈니스 검증만, 작성자 존재 확인 만 하자
 
-        if(scheduleSaveResponse.getTitle().length() > 30) {
-            throw new IllegalStateException("일정 제목은 최대 30자입니다.");
-        }
-        if(scheduleSaveResponse.getContent().length() > 200) {
-            throw new IllegalStateException("일정 내용은 최대 200자입니다.");
-        }
+        /**
+         * 결론부터 아래 주석 코드는 널 값, 길이 체크하는 내용으로, 필요없다.
+         * 이유는 ScheduleSaveRequest에 @NotBlank, @Size, @NotNull을 달았고 컨트롤러에서 @Valid로 받으면 스프링이 자동으로 400 에러를 보여주는 검증을 해준다.
+         */
+
+//        if(scheduleSaveRequest.getAuthor() == null) {
+//            throw new IllegalStateException("작성자명은 필수값입니다.");
+//        }
+//        if(scheduleSaveRequest.getTitle() == null) {
+//            throw new IllegalStateException("일정 제목은 필수값입니다.");
+//        }
+//        if(scheduleSaveRequest.getContent() == null) {
+//            throw new IllegalStateException("일정 내용은 필수값입니다.");
+//        }
+//
+//        if(scheduleSaveRequest.getTitle().length() > 30) {
+//            throw new IllegalStateException("일정 제목은 최대 30자입니다.");
+//        }
+//        if(scheduleSaveRequest.getContent().length() > 200) {
+//            throw new IllegalStateException("일정 내용은 최대 200자입니다.");
+//        }
+
+        User author = userRepository.findById(scheduleSaveRequest.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("작성자를 찾을 수 없습니다."));
 
         Schedule schedule = new Schedule(
-                scheduleSaveResponse.getTitle(),
-                scheduleSaveResponse.getContent(),
-                scheduleSaveResponse.getAuthor()
+                scheduleSaveRequest.getTitle(),
+                scheduleSaveRequest.getContent(),
+                author
         );
         Schedule savedSchedule = scheduleRepository.save(schedule);
-        return new ScheduleSaveResponse(            // 왜 6개 인수이지??
+        return new ScheduleSaveResponse(
                 savedSchedule.getId(),
                 savedSchedule.getTitle(),
                 savedSchedule.getContent(),
-                savedSchedule.getAuthor(),          //API 응답(ScheduleSaveResponse)에서 User 타입으로 설정, 엔티티에서 User author로 설정.
+                savedSchedule.getAuthor().getId(),
+                //1st 수정. API 응답(ScheduleSaveResponse)에서 User 타입으로 설정, 엔티티에서 User author로 설정.
+                //2nd 수정. authorId 확인
+                savedSchedule.getAuthor().getUsername(),
+                //1st 수정. authorName 확인
                 savedSchedule.getCreatedAt(),
                 savedSchedule.getModifiedAt()
         );
@@ -139,19 +152,20 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new IllegalArgumentException("일정을 찾을 수 없습니다."));
 
-        // 부분 업데이트 적용
+        // 부분 업데이트 적용 ( null이면 해당 필드는 수정 하지 않는다)
+        // 규칙 : 제목 공란 금지
         if (scheduleUpdateRequest.getTitle() != null) {
             if (scheduleUpdateRequest.getTitle().isEmpty()) {
                 throw new IllegalArgumentException("제목은 비어 있을 수 없습니다.");
             }
-            schedule.changeTitle(scheduleUpdateRequest.getTitle());
+            schedule.updateTitle(scheduleUpdateRequest.getTitle());
         }
-
+        // 규칙 : 내용 공란 금지
         if (scheduleUpdateRequest.getContent() != null) {
             if (scheduleUpdateRequest.getContent().isEmpty()) {
                 throw new IllegalArgumentException("내용은 비어 있을 수 없습니다.");
             }
-            schedule.changeContent(scheduleUpdateRequest.getContent());
+            schedule.updateContent(scheduleUpdateRequest.getContent());
         }
 
         // save() 불필요: 영속 엔티티 변경 감지

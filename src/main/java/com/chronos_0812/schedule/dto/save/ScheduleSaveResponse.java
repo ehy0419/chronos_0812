@@ -1,7 +1,6 @@
 package com.chronos_0812.schedule.dto.save;
 
 import com.chronos_0812.schedule.entity.Schedule;
-import com.chronos_0812.user.entity.User;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
