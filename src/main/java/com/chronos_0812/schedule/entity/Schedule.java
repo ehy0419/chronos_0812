@@ -34,8 +34,7 @@ public class Schedule extends BaseEntity {
     /** 작성 유저명 (필수, 최대 30자) */
     ///  LV1. 작성자명 - LV2. 사용자 연관관계(Many To one)
     @ManyToOne(fetch = FetchType.LAZY)                      // 수가 많을 곳에 작성!
-    @JoinColumn(name = "user_id", nullable = false)         // nullable = false 이기때문에 getAuthor().getUsername() NPE 위험 낮음.
-    @Column(nullable = false, length = 30)
+    @JoinColumn(name = "user_id", nullable = false)  //FK       // nullable = false 이기때문에 getAuthor().getUsername() NPE 위험 낮음.
     private User author;
     // 수정 전 : private String author;
     // 수정 후 : private User author;
@@ -70,3 +69,14 @@ public class Schedule extends BaseEntity {
         this.content = content;
     }
 }
+
+// 오류문 : Caused by: org.hibernate.AnnotationException: Property 'com.chronos_0812.schedule.entity.Schedule.author' is a '@ManyToOne' association and may not use '@Column' to specify column mappings (use '@JoinColumn' instead)
+/**
+ * 오류원인 : Hibernate가 Schedule 엔티티의 author 필드가 @ManyToOne 관계인데,
+ * 거기에 @Column을 붙였기 때문에 발생하는 문제입니다.
+ * @Column은 단순 값 타입(String, int, LocalDateTime 등)에만 사용합니다.
+ * 반면, @ManyToOne은 다른 엔티티와의 관계를 나타내기 때문에, 컬럼 매핑은 @JoinColumn을 사용해야 합니다.
+ * 즉, @Column은 VARCHAR, INT 등 단일 필드 매핑에 쓰이고,
+ * @JoinColumn은 외래키(FK) 관계에서 매핑을 담당합니다.
+ */
+

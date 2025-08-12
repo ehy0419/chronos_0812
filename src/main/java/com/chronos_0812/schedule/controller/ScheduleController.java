@@ -8,7 +8,6 @@ import com.chronos_0812.schedule.dto.update.ScheduleUpdateRequest;
 import com.chronos_0812.schedule.service.ScheduleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,7 +50,7 @@ public class ScheduleController {
      */
     @GetMapping
     public ResponseEntity<List<ScheduleGetAllResponse>> getAllSchedules(
-            @RequestParam(value = "scheduleId", required = false) Long authorId
+            @RequestParam(value = "authorId", required = false) Long authorId
             // 수정 전 : @RequestBody(required = false) String author
             // 수정 후 : @RequestParam(value = "authorId", required = false) Long authorId
             // 수정 이유 : GET에 @RequestBody 사용 제거: 조회 필터는 @RequestParam이 적절
@@ -84,7 +83,7 @@ public class ScheduleController {
      * Body(JSON) : {"title":"새 제목"} 또는 {"content":"새 내용"}
      */
 
-    @PutMapping("/{scheduleId}")
+    @PatchMapping("/{scheduleId}")
     public ResponseEntity<ScheduleGetOneResponse> updateSchedule(
             @PathVariable long scheduleId,
             @Valid @RequestBody ScheduleUpdateRequest scheduleUpdateRequest
@@ -101,10 +100,19 @@ public class ScheduleController {
      * 일정 삭제
      * 예) DELETE /schedules/10
      */
+    // version2
     @DeleteMapping("/{scheduleId}")
-    public void deleteSchedule(
-            @PathVariable long scheduleId
-    ) {
+    public ResponseEntity<Void> deleteSchedule(
+            @PathVariable long scheduleId) {
         scheduleService.deleteSchedule(scheduleId);
+        return ResponseEntity.noContent().build();              // 204 No Content
     }
+
+    // version 1
+//    @DeleteMapping("/{scheduleId}")
+//    public void deleteSchedule(
+//            @PathVariable long scheduleId
+//    ) {
+//        scheduleService.deleteSchedule(scheduleId);
+//    }
 }
