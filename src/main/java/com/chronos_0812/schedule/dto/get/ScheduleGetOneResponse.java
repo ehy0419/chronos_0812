@@ -1,7 +1,6 @@
 package com.chronos_0812.schedule.dto.get;
 
 import com.chronos_0812.schedule.entity.Schedule;
-import com.chronos_0812.user.entity.User;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -17,8 +16,8 @@ public class ScheduleGetOneResponse {
     private final LocalDateTime modifiedAt;     // BaseEntity에서 상속
 
     /**
-     *  private final User author;
-     *  유저 (작성자) author를 그대로 노출시지키 않고 DTO에 작성자의 이름만 남기자.
+     * private final User author;
+     * 유저 (작성자) author를 그대로 노출시지키 않고 DTO에 작성자의 이름만 남기자.
      */
 
 
@@ -47,4 +46,5 @@ public class ScheduleGetOneResponse {
                 schedule.getCreatedAt(),
                 schedule.getModifiedAt()
         );
+    }
 }

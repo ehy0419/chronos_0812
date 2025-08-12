@@ -23,4 +23,15 @@ public class User extends BaseEntity {
 
     @Column(nullable = false, length = 100)                 // 비밀번호는 필수, 최대 30자
     private String password;                            // 도전: 비밀번호 암호화
+
+    // 필요한 부분만 업데이트
+    public void updateUsername(String username) {
+        this.username = username;
+    }
+    public void updateEmail(String email) {
+        this.email = email;
+    }
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }
