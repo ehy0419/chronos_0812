@@ -10,27 +10,35 @@ import java.time.LocalDateTime;
  * (필요 필드만 노출)
  */
 
+/**
+ * 단건 조회 응답 DTO
+ * Lv2. userId, username 수정
+ */
+
 @Getter
 public class ScheduleGetAllResponse {       ///  전체 조회 응답
 
     private final Long id;
+    private final Long userId;              // Lv2. 추가
+    private final String username;          // Lv2. 추가 <- User 엔티티 대신 '작성 유저명'만 노출
     private final String title;
     private final String content;
-    private final String authorName;            // <- User 엔티티 대신 '작성 유저명'만 노출
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
     public ScheduleGetAllResponse(
             Long id,
+            Long userId,
+            String username,
             String title,
             String content,
-            String authorName,
             LocalDateTime createdAt,
             LocalDateTime modifiedAt) {
         this.id = id;
+        this.userId = userId;
+        this.username = username;
         this.title = title;
         this.content = content;
-        this.authorName = authorName;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
     }
@@ -39,9 +47,10 @@ public class ScheduleGetAllResponse {       ///  전체 조회 응답
     public static ScheduleGetAllResponse from(Schedule schedule) {
         return new ScheduleGetAllResponse(
                 schedule.getId(),
+                schedule.getUser().getId(),
                 schedule.getTitle(),
                 schedule.getContent(),
-                schedule.getAuthor().getUsername(),
+                schedule.getUser().getUsername(),
                 schedule.getCreatedAt(),
                 schedule.getModifiedAt()
         );

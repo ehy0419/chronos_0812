@@ -22,6 +22,10 @@ import java.util.List;
  *  - DELETE /schedules/{scheduleId}    : 삭제
  */
 
+/**
+ * Lv2: 저장 시 userId 필요
+ */
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/schedules")

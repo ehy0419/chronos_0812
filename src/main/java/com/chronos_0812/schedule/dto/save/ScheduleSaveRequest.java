@@ -12,6 +12,12 @@ import lombok.NoArgsConstructor;
  * (Lv1에서는 간단하게 필드만. Validation은 Lv5에서 확장)
  */
 
+/**
+ * 일정 생성 요청 DTO
+ * Lv2: Long userId로 작성자 지정)
+ */
+
+
 @Getter
 @NoArgsConstructor
 public class ScheduleSaveRequest {      ///  등록 요청

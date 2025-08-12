@@ -45,8 +45,8 @@ public class ScheduleSaveResponse {
                 schedule.getId(),
                 schedule.getTitle(),
                 schedule.getContent(),
-                schedule.getAuthor().getId(),
-                schedule.getAuthor().getUsername(),
+                schedule.getUser().getId(),
+                schedule.getUser().getUsername(),
                 schedule.getCreatedAt(),
                 schedule.getModifiedAt()
         );

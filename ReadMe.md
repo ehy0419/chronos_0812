@@ -40,3 +40,47 @@ Lv1. 점검할 것. <br>
   * Service: ScheduleService
   * Controller: ScheduleController
   * BaseEntity: JPA Auditing용
+
+## Lv2. 유저 CRUD <br>
+```json
+src/main/java/com/chronos_0812
+ ├─ config
+ │   └─ JpaAuditingConfig.java              // (Lv1 재사용)
+ ├─ common
+ │   └─ BaseEntity.java                     // (Lv1 재사용)
+ ├─ user
+ │   ├─ controller
+ │   │   └─ UserController.java
+ │   ├─ dto
+ │   │   ├─ get
+ │   │   │   ├─ UserGetAllResponse.java
+ │   │   │   └─ UserGetOneResponse.java
+ │   │   ├─ save
+ │   │   │   └─ UserSaveRequest.java
+ │   │   └─ update
+ │   │       └─ UserUpdateRequest.java
+ │   ├─ entity
+ │   │   └─ User.java
+ │   ├─ repository
+ │   │   └─ UserRepository.java
+ │   └─ service
+ │       └─ UserService.java
+ └─ schedule
+     ├─ controller
+     │   └─ ScheduleController.java         // (수정) 저장 DTO 변경
+     ├─ dto
+     │   ├─ get
+     │   │   ├─ ScheduleGetAllResponse.java // (수정) username, userId 포함
+     │   │   └─ ScheduleGetOneResponse.java // (수정) username, userId 포함
+     │   ├─ save
+     │   │   └─ ScheduleSaveRequest.java    // (변경) author → userId
+     │   └─ update
+     │       └─ ScheduleUpdateRequest.java
+     ├─ entity
+     │   └─ Schedule.java                   // (수정) author → user 연관관계
+     ├─ repository
+     │   └─ ScheduleRepository.java
+     └─ service
+         └─ ScheduleService.java            // (수정) 저장 시 userId 로드
+
+```

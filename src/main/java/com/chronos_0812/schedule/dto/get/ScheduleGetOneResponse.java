@@ -9,13 +9,19 @@ import java.time.LocalDateTime;
  * 단건 조회 응답 DTO
  */
 
+/**
+ * 단건 조회 응답 DTO
+ * Lv2. userId, username 수정
+ */
+
 @Getter
 public class ScheduleGetOneResponse {       /// 단건 조회 응답
 
     private final Long id;
+    private final Long userId;              // Lv2. 추가
+    private final String username;          // Lv2. 추가 <- User 엔티티 대신 '작성 유저명'만 노출
     private final String title;
     private final String content;
-    private final String authorName;            // <- User 엔티티 대신 '작성 유저명'만 노출
     private final LocalDateTime createdAt;      // BaseEntity에서 상속
     private final LocalDateTime modifiedAt;     // BaseEntity에서 상속
 
@@ -26,15 +32,17 @@ public class ScheduleGetOneResponse {       /// 단건 조회 응답
 
     public ScheduleGetOneResponse(
             Long id,
+            Long userId,
+            String username,
             String title,
             String content,
-            String authorName,
             LocalDateTime createdAt,
             LocalDateTime modifiedAt) {
         this.id = id;
+        this.userId = userId;
+        this.username = username;
         this.title = title;
         this.content = content;
-        this.authorName = authorName;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
     }
@@ -43,11 +51,16 @@ public class ScheduleGetOneResponse {       /// 단건 조회 응답
     public static ScheduleGetOneResponse from(Schedule schedule) {
         return new ScheduleGetOneResponse(
                 schedule.getId(),
+                schedule.getUser().getId(),             // User user 연관관계
                 schedule.getTitle(),
                 schedule.getContent(),
-                schedule.getAuthor().getUsername(),         // 혹은 getName() 등 실제 필드명, 여기서 User.username 사용
+                schedule.getUser().getUsername(),       // User user 연관관계
                 schedule.getCreatedAt(),
                 schedule.getModifiedAt()
         );
     }
 }
+
+//오류 : schedule.getUsername(),
+//오류문 : 'Schedule'의 메서드 'getUsername'을(를) 해결할 수 없습니다
+//오류원인,해결 : Schedule에 String username이 아니라 User user 연관관계라서, DTO 매핑에서 schedule.getUsername() → schedule.getUser().getUsername() 로 바꿔주면 됩니다

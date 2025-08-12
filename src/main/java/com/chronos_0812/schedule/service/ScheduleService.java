@@ -20,6 +20,10 @@ import java.util.List;
  * 트랜잭션 경계와 비즈니스 로직 담당
  */
 
+/**
+ * Lv2: User 연관
+ */
+
 @Service
 @RequiredArgsConstructor
 public class ScheduleService {
@@ -68,7 +72,7 @@ public class ScheduleService {
                 scheduleSaveRequest.getTitle(),
                 scheduleSaveRequest.getContent(),
                 author
-                // 수정 전 scheduleSaveRequest.getAuthor()
+                // 수정 전 scheduleSaveRequest.getUser()
                 // 수정 후 author
         );
         Schedule savedSchedule = scheduleRepository.save(schedule);
@@ -76,10 +80,10 @@ public class ScheduleService {
                 savedSchedule.getId(),
                 savedSchedule.getTitle(),
                 savedSchedule.getContent(),
-                savedSchedule.getAuthor().getId(),
-                //1st 수정. API 응답(ScheduleSaveResponse)에서 User 타입으로 설정, 엔티티에서 User author로 설정.
-                //2nd 수정. authorId 확인
-                savedSchedule.getAuthor().getUsername(),
+                savedSchedule.getUser().getId(),
+                //1st 수정. API 응답(ScheduleSaveResponse)에서 User 타입으로 설정, 엔티티에서 User user로 설정.
+                //2nd 수정. userId 확인
+                savedSchedule.getUser().getUsername(),
                 //1st 수정. authorName 확인
                 savedSchedule.getCreatedAt(),
                 savedSchedule.getModifiedAt()
@@ -102,9 +106,10 @@ public class ScheduleService {
             for (Schedule schedule : schedules) {
                 ScheduleGetAllResponse scheduleGetAllResponse = new ScheduleGetAllResponse(
                         schedule.getId(),
+                        schedule.getUser().getId(),
                         schedule.getTitle(),
                         schedule.getContent(),
-                        schedule.getAuthor().getUsername(),         //  정적 메소드 활용??
+                        schedule.getUser().getUsername(),         //  정적 메소드 활용??
                         schedule.getCreatedAt(),
                         schedule.getModifiedAt()
                 );
@@ -117,9 +122,10 @@ public class ScheduleService {
         for (Schedule schedule : schedules) {
             ScheduleGetAllResponse scheduleGetAllResponse = new ScheduleGetAllResponse(
                     schedule.getId(),
+                    schedule.getUser().getId(),
                     schedule.getTitle(),
                     schedule.getContent(),
-                    schedule.getAuthor().getUsername(),             //  정적 메소드 활용??
+                    schedule.getUser().getUsername(),             //  정적 메소드 활용??
                     schedule.getCreatedAt(),
                     schedule.getModifiedAt()
             );
