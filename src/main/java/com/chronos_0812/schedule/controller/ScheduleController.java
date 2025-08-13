@@ -55,7 +55,7 @@ public class ScheduleController {
      */
     @GetMapping
     public ResponseEntity<List<ScheduleGetAllResponse>> getAllSchedules(
-            @RequestParam(value = "userId", required = false) Long userId
+            @RequestParam(value = "userId", required = false) Long userId           ///  ?userId=1 로 필터
             ///  쿼리 파라미터 변경 ///
             // 수정 전 : @RequestBody(required = false) String user
             // 수정 후 : @RequestParam(value = "userId", required = false) Long userId

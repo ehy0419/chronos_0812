@@ -43,6 +43,13 @@ public class Schedule extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)             // @Column이 아니라 @JoinColumn 사용!
     private User user;
 
+    /**
+     * @ManyToOne 기본 fetch는 EAGER인데 Hibernate는 LAZY도 지원해줍니다.
+     * 현재처럼 DTO 매핑을 서비스 트랜잭션 안에서 처리하면 LazyInitialization 문제도 회피됩니다.
+     *
+     * ????? LazyInitialization ????
+     */
+
     // 생성자 - 필수 필드 세팅
     public Schedule(String title, String content, User user) {
         this.title = title;

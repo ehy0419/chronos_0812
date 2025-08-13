@@ -29,7 +29,7 @@ public class ScheduleService {
     private final UserRepository userRepository;
 
     /** 일정 저장, 생성 */
-    @Transactional
+    @Transactional          // 쓰기 트랜잭션
     public ScheduleSaveResponse save(ScheduleSaveRequest scheduleSaveRequest) {
         // 유효성 검사는 컨트롤러 @Valid 에서 하며
         // 서비스에서는 비즈니스 검증만, 작성자 존재 확인 만 하자
@@ -57,7 +57,7 @@ public class ScheduleService {
 //            throw new IllegalStateException("일정 내용은 최대 200자입니다.");
 //        }
 
-        User author = userRepository.findById(scheduleSaveRequest.getUserId())
+        User author = userRepository.findById(scheduleSaveRequest.getUserId())          /// userId로 작성자 조회 후
                 .orElseThrow(() -> new IllegalArgumentException("작성자를 찾을 수 없습니다."));
 
         /**
@@ -66,14 +66,14 @@ public class ScheduleService {
 
         // Version 2
         Schedule saved = scheduleRepository.save(
-                new Schedule(
+                new Schedule(                                                           /// new Schedule(..) 로 저장
                         scheduleSaveRequest.getTitle(),
                         scheduleSaveRequest.getContent(),
                         author)
         );
 
         // 수정 전 : new ScheduleSaveResponse(...) 수동 매핑
-        // 수정 후 : 정적 팩토리로 통일
+        // 수정 후 : DTO 변환 정적 팩토리로 통일
         return ScheduleSaveResponse.from(saved);
 
         // Version 1
@@ -101,7 +101,7 @@ public class ScheduleService {
     }
 
     /** 일정 전체/작성자별 조회 (읽기 전용 트랜잭션) */
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true)         // 조회 트랜잭션
     public List<ScheduleGetAllResponse> findAllSchedules(Long userId) {     // 에러 : findAllSchedules 의 타입 User user
         /**
          * 수정 전 : userId == null 분기/중복 코드 + 실제로는 항상 전체 반환
@@ -155,7 +155,7 @@ public class ScheduleService {
     }
 
     /** 일정 단건 조회 */
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true)                 // 조회 트랜잭션
     public ScheduleGetOneResponse findSchedule(long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalArgumentException("일정을 찾을 수 없습니다."));
@@ -171,7 +171,7 @@ public class ScheduleService {
 //    }
 
     /** 일정 수정 (부분 업데이트) */
-    @Transactional
+    @Transactional                              // 쓰기 트랜잭션
     public ScheduleGetOneResponse updateSchedule(long scheduleId, ScheduleUpdateRequest scheduleUpdateRequest) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalArgumentException("일정을 찾을 수 없습니다."));

@@ -16,4 +16,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     // 수정 전 : (없음)
     // 수정 후 : 필요 시 작성자 필터링에 사용
     List<Schedule> findByUserId(Long userId);
+    // 기능 : 연관관계의 FK 기준으로 자동 Join
+
+    ///  페이징 고려할 때
+    // Page<Schedule> findByUserId(Long userId, Pageable pageable) 참고
 }
