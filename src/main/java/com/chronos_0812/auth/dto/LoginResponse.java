@@ -8,11 +8,12 @@ import lombok.NoArgsConstructor;
  */
 
 @Getter
+@NoArgsConstructor
 
 public class LoginResponse {
 
-    private final Long userId;
-    private final String username;
+    private Long userId;
+    private String username;
 
     public LoginResponse(Long userId, String username) {
         this.userId = userId;
