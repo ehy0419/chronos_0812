@@ -1,7 +1,7 @@
 package com.chronos_0812.auth.session;
 
 /**
- * HttpSession에 보관할 키
+ * HttpSession에 보관할 저장소
  */
 
 public class SessionContainer {
