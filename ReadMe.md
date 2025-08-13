@@ -8,7 +8,7 @@
 # 프로젝트 패키지 구조
 ## Lv1. 일정 CRUD <br>
 
-```json
+```
 com.example.schedule
  ├── controller       // 요청/응답 처리
  │     └── ScheduleController.java
@@ -42,7 +42,7 @@ Lv1. 점검할 것. <br>
   * BaseEntity: JPA Auditing용
 
 ## Lv2. 유저 CRUD <br>
-```json
+```
 src/main/java/com/chronos_0812
  ├─ config
  │   └─ JpaAuditingConfig.java              // (Lv1 재사용)
