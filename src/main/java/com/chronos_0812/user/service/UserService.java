@@ -35,7 +35,9 @@ public class UserService {
     // 수정 이유
     // Long id 만 반환하는 것이 아니라 UserSaveResponse DTO로 반환해서
     // 다른 정보도 전달이 가능, 비밀번호는 제외!
-    // 수정 후
+
+
+    /** 회원가입 */
     @Transactional
     public UserSaveResponse save(UserSaveRequest userSaveRequest) {
         // 수정 전: username/email만 검사
@@ -48,7 +50,7 @@ public class UserService {
             throw new IllegalArgumentException("이메일은 필수입니다.");
         }
 
-        // 수정 후: password도 검사 (nullable=false 이므로 필수)
+        // 수정 후: password도 추가해서 검사 (nullable=false 이므로 필수)
         if (userSaveRequest.getPassword() == null || userSaveRequest.getPassword().trim().isEmpty()
         ) {
             throw new IllegalArgumentException("비밀번호는 필수입니다.");
@@ -61,6 +63,30 @@ public class UserService {
 
         ///  암호화 ///
         // Lv6에서: String encoded = passwordEncoder.encode(userSaveRequest.getPassword());
+        // PasswordEncoder 클래스 생성
+
+        /**  build.gradle 에 아래의 의존성을 추가
+         implementation 'at.favre.lib:bcrypt:0.10.2'
+         */
+
+        /**  PasswordEncoder 클래스 생성
+         import at.favre.lib.crypto.bcrypt.BCrypt;
+         import org.springframework.stereotype.Component;
+
+         @Component
+         public class PasswordEncoder {
+
+         public String encode(String rawPassword) {
+         return BCrypt.withDefaults().hashToString(BCrypt.MIN_COST, rawPassword.toCharArray());
+         }
+
+         public boolean matches(String rawPassword, String encodedPassword) {
+         BCrypt.Result result = BCrypt.verifyer().verify(rawPassword.toCharArray(), encodedPassword);
+         return result.verified;
+         }
+         }
+         */
+
 
         // 수정 전 : return saved.getId();
 //        User user = new User(

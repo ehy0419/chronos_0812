@@ -27,6 +27,7 @@ public class UserController {
 
     private final UserService userService;
 
+    /** Create 회원가입 */
     @PostMapping
     // 수정 전
 //    public ResponseEntity<Long> save(
@@ -42,12 +43,13 @@ public class UserController {
         return ResponseEntity.ok(userService.save(userSaveRequest));
     }
 
-
+    /** Read 전체 목록 조회 */
     @GetMapping
     public ResponseEntity<List<UserGetAllResponse>> findAll() {
         return ResponseEntity.ok(userService.findAll());
     }
 
+    /** Read 단건 목록 조회 */
     @GetMapping("/{userId}")
     public ResponseEntity<UserGetOneResponse> findOne(
             // 수정 전 : @PathVariable Long id
@@ -58,15 +60,17 @@ public class UserController {
         return ResponseEntity.ok(userService.findOne(userId));
     }
 
+    /** Update 단건 비밀번호 제외한 정보 일부 수정 */
     @PutMapping("/{userId}")
     public ResponseEntity<Void> update(
             @PathVariable("userId") Long userId,
             @RequestBody UserUpdateRequest userUpdateRequest
     ) {
         userService.update(userId, userUpdateRequest);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();          // 코드 204
     }
 
+    /** Delete 유저 삭제 */
     // 수정 전
 //    @DeleteMapping("/{userId}")
 //    public ResponseEntity<Void> delete(

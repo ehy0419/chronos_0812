@@ -1,10 +1,12 @@
 package com.chronos_0812.user.entity;
 
 import com.chronos_0812.common.config.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * Lv2: 유저 모델
@@ -23,6 +25,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Table(name = "users")
+@ToString(onlyExplicitlyIncluded = true)            // ← toString 안전하게!, 보통 @JsonIgnore 과 함께 사용된다.
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
@@ -32,17 +35,25 @@ public class User extends BaseEntity {
 
     /** 유저명 (필수, 최대 30자) */
     @Column(nullable = false, length = 30)
+    @ToString.Include                               /// 안전한 필드만 포함되게 사용
     private String username;
 
     /** 이메일 (필수, 최대 100자, UNIQUE) */
     @Column(nullable = false, length = 100, unique = true)
+    @ToString.Include                               /// 안전한 필드만 포함되게 사용
     private String email;
 
-    /** 비밀번호 (필수, 최대30자, 도전에서 암호화) */
-    @Column(nullable = false, length = 30)
-    private String password;
+    /** 비밀번호 (필수, 최대100자, 도전에서 암호화) */
+    @Column(nullable = false, length = 100)
+    @JsonIgnore                           // 수정 후: JSON 응답에서 완전히 제외하기 위해서
+    @ToString.Exclude                     // 수정 후: 로그(toString)에도 제외
+    private String password;              // 수정 이유 : 엔티티가 실수로 JSON 직렬화되어도 비번 제외
 
-    public User(String username, String email, String password) {
+    public User(
+            String username,
+            String email,
+            String password
+    ) {
         this.username = username;
         this.email = email;
         this.password = password;
