@@ -1,14 +1,14 @@
 package com.chronos_0812.auth.session;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * 세션에 저장할 최소한의 유저 정보 (비밀번호 제외)
  */
 
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor
 
 public class SessionUser {
     private Long id;
