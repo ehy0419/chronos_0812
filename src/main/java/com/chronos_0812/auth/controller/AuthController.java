@@ -1,8 +1,12 @@
 package com.chronos_0812.auth.controller;
 
+import com.chronos_0812.auth.dto.LoginRequest;
 import com.chronos_0812.auth.dto.LoginResponse;
+import com.chronos_0812.auth.service.LoginService;
+import com.chronos_0812.auth.session.SessionContainer;
 import com.chronos_0812.auth.session.SessionUser;
 import com.chronos_0812.user.dto.save.UserSaveRequest;
+import com.chronos_0812.user.dto.save.UserSaveResponse;
 import com.chronos_0812.user.entity.User;
 import com.chronos_0812.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,14 +20,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 회원가입 전용 API
+ * 회원가입 + 로그린 + 로그나웃 전용 API
+ * - Lv. 3에서 /auth/signup 구현
  * - POST /auth/signup
  * - Lv.4에서 /auth/login 추가 예정
- */
-
-/**
- * 회원가입은 Lv3에서 구현 완료 (/auth/signup)
- * 여기서는 로그인/로그아웃만 추가
+ * - POST /auth/login
+ * - POST /auth/logout
  */
 
 @RestController
@@ -31,17 +33,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserService userService;
+    private final UserService userService;      // 회원가입
+    private final LoginService loginService;    // 로그인 인증 인가
+                                                // 로그아웃은??
 
-    /**
-     * 회원가입
+    /** 회원가입
+     * Lv.3 유지: 비밀번호 노출 금지
      */
     @PostMapping("/signup")
-    public ResponseEntity<Long> signup(
+    public ResponseEntity<UserSaveResponse> signup(
             @RequestBody UserSaveRequest userSaveRequest
     ) {
-        Long userId = userService.save(userSaveRequest);
-        return ResponseEntity.ok(userId);  // "일정 관리 회원가입에 성공했습니다."
+        UserSaveResponse userId = userService.save(userSaveRequest);        // 비번 미포함 DTO
+        return ResponseEntity.ok(userId);                                   // "일정 관리 회원가입에 성공했습니다."
     }
 
     //@PostMapping("/signup")
@@ -54,38 +58,30 @@ public class AuthController {
 
     /**
      * 로그인
-     * - 이메일/비밀번호가 일치하면 HttpSession 생성 후 사용자 정보 저장
-     * - 과제 요구사항 : 불일치 시 401 반환
+     * - 이메일/비밀번호가 일치하면 HttpSession 생성 후 사용자 정보 SessionUser 에 저장
+     * - 예외처리 요구사항 : 로그인 시 이메일과 비밀번호가 일치하지 않을 경우 HTTP Status code 401을 반환합니다.
      */
 
     @PostMapping("/login")
-    public ResponseEntity<User> login(
-            @RequestBody UserSaveRequest userSaveRequest, HttpServletRequest httpServletRequest
+    public ResponseEntity<LoginResponse> login(
+            @RequestBody LoginRequest loginRequest, HttpServletRequest httpServletRequest
     ) {
-        if (userSaveRequest.getEmail().equals(userSaveRequest.getPassword())) {
-            HttpSession httpSession = httpServletRequest.getSession();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("이메일 또는 비밀번호가 올바르지 않습니다.");
-        }
-
-        User user = userRepository.findByEmail(req.getEmail())
-                .orElse(null);
-
-        // Lv6에서: passwordEncoder.matches(req.getPassword(), user.getPassword())
-        if (user == null || !req.getPassword().equals(user.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("이메일 또는 비밀번호가 올바르지 않습니다.");
+        // 세션 사용자 생성 & 저장
+        SessionUser sessionUser= loginService.authenticate(loginRequest.getEmail(),loginRequest.getPassword());
+        if (sessionUser==null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         // 세션 생성 & 저장
-        HttpSession session = request.getSession(true); // 없으면 생성
-        session.setAttribute(SessionConst.LOGIN_USER,
-                new SessionUser(user.getId(), user.getUsername(), user.getEmail()));
+        HttpSession httpsession = httpServletRequest.getSession(true); // 없으면 생성
+        httpsession.setAttribute(SessionContainer.LOGIN_USER, sessionUser);
 
         // 세션 타임아웃(선택): 30분
-        session.setMaxInactiveInterval(30 * 60);
+        httpsession.setMaxInactiveInterval(30 * 60);
 
-        return ResponseEntity.ok(new LoginResponse(user.getId(), user.getUsername()));
+        return ResponseEntity.ok(new LoginResponse(sessionUser.getId(), sessionUser.getUsername()));
+        // 수정 전 : return ResponseEntity.ok(new LoginResponse(user.getId(), user.getUsername()));
+        // 수정 후 : return ResponseEntity.ok(new LoginResponse(sessionUser.getId(), sessionUser.getUsername()));
     }
 
     /**
@@ -94,8 +90,8 @@ public class AuthController {
      */
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request) {
-        HttpSession session = request.getSession(false); // 있으면 가져오고 없으면 null
+    public ResponseEntity<Void> logout(HttpServletRequest httpServletRequestrequest) {
+        HttpSession session = httpServletRequestrequest.getSession(false);          // 있으면 가져오고 없으면 null
         if (session != null) session.invalidate();
         return ResponseEntity.noContent().build();
     }
