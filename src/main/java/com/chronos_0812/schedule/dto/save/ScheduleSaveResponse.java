@@ -16,8 +16,8 @@ public class ScheduleSaveResponse {
     // 수정 사유 : 엔티티 대신 식별자/표시용 필드만
     // 저장은 "누가? 무엇을? 언제 저장했는지? 만 알면 충분할 것이라 생각되서,
     // User 엔티티 대신에 authorId, authorName으로 바꾸면 좋겠다.
-    private final Long authorId;
-    private final String authorName;
+    private final Long userId;
+    private final String userName;
 
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
@@ -26,15 +26,16 @@ public class ScheduleSaveResponse {
             Long id,
             String title,
             String content,
-            Long authorId,
-            String authorName,
+            Long userId,
+            String userName,
             LocalDateTime createdAt,
-            LocalDateTime modifiedAt) {
+            LocalDateTime modifiedAt
+    ) {
         this.id = id;
         this.title = title;
         this.content = content;
-        this.authorId = authorId;
-        this.authorName = authorName;
+        this.userId = userId;
+        this.userName = userName;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
     }

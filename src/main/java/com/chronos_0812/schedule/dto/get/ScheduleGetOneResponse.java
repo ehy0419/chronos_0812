@@ -7,10 +7,6 @@ import java.time.LocalDateTime;
 
 /**
  * 단건 조회 응답 DTO
- */
-
-/**
- * 단건 조회 응답 DTO
  * Lv2. userId, username 수정
  */
 
@@ -37,7 +33,8 @@ public class ScheduleGetOneResponse {       /// 단건 조회 응답
             String title,
             String content,
             LocalDateTime createdAt,
-            LocalDateTime modifiedAt) {
+            LocalDateTime modifiedAt
+    ) {
         this.id = id;
         this.userId = userId;
         this.username = username;
@@ -48,13 +45,27 @@ public class ScheduleGetOneResponse {       /// 단건 조회 응답
     }
 
     // 정적 팩토리: 엔티티 -> DTO 매핑
+    // 수정 전(버그): (id, userId, title, content, username, ...)
+//    public static ScheduleGetOneResponse from(Schedule schedule) {
+//        return new ScheduleGetOneResponse(
+//                schedule.getId(),
+//                schedule.getUser().getId(),             // User user 연관관계
+//                schedule.getTitle(),
+//                schedule.getContent(),
+//                schedule.getUser().getUsername(),       // User user 연관관계
+//                schedule.getCreatedAt(),
+//                schedule.getModifiedAt()
+//        );
+//    }
+
+    // 수정 후(정상): (id, userId, username, title, content, ...)
     public static ScheduleGetOneResponse from(Schedule schedule) {
         return new ScheduleGetOneResponse(
                 schedule.getId(),
-                schedule.getUser().getId(),             // User user 연관관계
+                schedule.getUser().getId(),
+                schedule.getUser().getUsername(), // ← 위치 중요!
                 schedule.getTitle(),
                 schedule.getContent(),
-                schedule.getUser().getUsername(),       // User user 연관관계
                 schedule.getCreatedAt(),
                 schedule.getModifiedAt()
         );

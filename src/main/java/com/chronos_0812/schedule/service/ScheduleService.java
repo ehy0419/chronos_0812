@@ -18,27 +18,20 @@ import java.util.List;
 
 /**
  * 트랜잭션 경계와 비즈니스 로직 담당
- */
-
-/**
  * Lv2: User 연관
  */
 
 @Service
 @RequiredArgsConstructor
 public class ScheduleService {
-    ///  비즈니스 로직
 
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
 
-    /**
-     * 일정 저장(생성)
-     */
-
+    /** 일정 생성 */
     @Transactional
     public ScheduleSaveResponse save(ScheduleSaveRequest scheduleSaveRequest) {
-        // 유효성 검사는 컨트롤러 @Valid 에서 처리
+        // 유효성 검사는 컨트롤러 @Valid 에서 하며
         // 서비스에서는 비즈니스 검증만, 작성자 존재 확인 만 하자
 
         /**
@@ -67,80 +60,100 @@ public class ScheduleService {
         User author = userRepository.findById(scheduleSaveRequest.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("작성자를 찾을 수 없습니다."));
 
-        /// Lv1. 일정 생성
-        Schedule schedule = new Schedule(
-                scheduleSaveRequest.getTitle(),
-                scheduleSaveRequest.getContent(),
-                author
-                // 수정 전 scheduleSaveRequest.getUser()
-                // 수정 후 author
+        /**
+         *  과제 끝나고 해볼 것 : new ScheduleSaveResponse(...) 수동 매핑 과 정적 팩토리의 비교 및 작성
+         */
+
+        // Version 2
+        Schedule saved = scheduleRepository.save(
+                new Schedule(
+                        scheduleSaveRequest.getTitle(),
+                        scheduleSaveRequest.getContent(),
+                        author)
         );
-        Schedule savedSchedule = scheduleRepository.save(schedule);
-        return new ScheduleSaveResponse(
-                savedSchedule.getId(),
-                savedSchedule.getTitle(),
-                savedSchedule.getContent(),
-                savedSchedule.getUser().getId(),
-                //1st 수정. API 응답(ScheduleSaveResponse)에서 User 타입으로 설정, 엔티티에서 User user로 설정.
-                //2nd 수정. userId 확인
-                savedSchedule.getUser().getUsername(),
-                //1st 수정. authorName 확인
-                savedSchedule.getCreatedAt(),
-                savedSchedule.getModifiedAt()
-        );
+
+        // 수정 전 : new ScheduleSaveResponse(...) 수동 매핑
+        // 수정 후 : 정적 팩토리로 통일
+        return ScheduleSaveResponse.from(saved);
+
+        // Version 1
+//        /// Lv1. 일정 생성
+//        Schedule schedule = new Schedule(
+//                scheduleSaveRequest.getTitle(),
+//                scheduleSaveRequest.getContent(),
+//                author
+//                // 수정 전 scheduleSaveRequest.getUser()
+//                // 수정 후 author
+//        );
+//        Schedule savedSchedule = scheduleRepository.save(schedule);
+//        return new ScheduleSaveResponse(
+//                savedSchedule.getId(),
+//                savedSchedule.getTitle(),
+//                savedSchedule.getContent(),
+//                savedSchedule.getUser().getId(),
+//                //1st 수정. API 응답(ScheduleSaveResponse)에서 User 타입으로 설정, 엔티티에서 User user로 설정.
+//                //2nd 수정. userId 확인
+//                savedSchedule.getUser().getUsername(),
+//                //1st 수정. authorName 확인
+//                savedSchedule.getCreatedAt(),
+//                savedSchedule.getModifiedAt()
+//        );
     }
 
-    /**
-     * 일정 전체 조회 (읽기 전용 트랜잭션 → 성능 최적화)
-     *
-     * @param authorId
-     * @return
-     */
-
+    /** 일정 전체/작성자별 조회 (읽기 전용 트랜잭션) */
     @Transactional(readOnly = true)
-    public List<ScheduleGetAllResponse> findAllSchedules(Long authorId) {     // 에러 : findAllSchedules 의 타입 User author
-        List<Schedule> schedules = scheduleRepository.findAll();
-        List<ScheduleGetAllResponse> scheduleGetAllResponses = new ArrayList<>();
+    public List<ScheduleGetAllResponse> findAllSchedules(Long userId) {     // 에러 : findAllSchedules 의 타입 User user
+        /**
+         * 수정 전 : userId == null 분기/중복 코드 + 실제로는 항상 전체 반환
+         */
+//        List<Schedule> schedules = scheduleRepository.findAll();
+//        List<ScheduleGetAllResponse> scheduleGetAllResponses = new ArrayList<>();
+//
+//        if (userId == null) {                     // userId로 User 조회 → 해당 유저의 일정만 반환
+//            for (Schedule schedule : schedules) {
+//                ScheduleGetAllResponse scheduleGetAllResponse = new ScheduleGetAllResponse(
+//                        schedule.getId(),
+//                        schedule.getUser().getId(),
+//                        schedule.getTitle(),
+//                        schedule.getContent(),
+//                        schedule.getUser().getUsername(),         //  정적 메소드 활용??
+//                        schedule.getCreatedAt(),
+//                        schedule.getModifiedAt()
+//                );
+//                scheduleGetAllResponses.add(scheduleGetAllResponse);
+//            }
+//            return scheduleGetAllResponses;
+//        }
+//        // userId 없으면 전체 일정 반환
+//
+//        for (Schedule schedule : schedules) {
+//            ScheduleGetAllResponse scheduleGetAllResponse = new ScheduleGetAllResponse(
+//                    schedule.getId(),
+//                    schedule.getUser().getId(),
+//                    schedule.getTitle(),
+//                    schedule.getContent(),
+//                    schedule.getUser().getUsername(),             //  정적 메소드 활용??
+//                    schedule.getCreatedAt(),
+//                    schedule.getModifiedAt()
+//            );
+//            scheduleGetAllResponses.add(scheduleGetAllResponse);
+//        }
+//        return scheduleGetAllResponses;
 
-        if (authorId == null) {                     // authorId로 User 조회 → 해당 유저의 일정만 반환
-            for (Schedule schedule : schedules) {
-                ScheduleGetAllResponse scheduleGetAllResponse = new ScheduleGetAllResponse(
-                        schedule.getId(),
-                        schedule.getUser().getId(),
-                        schedule.getTitle(),
-                        schedule.getContent(),
-                        schedule.getUser().getUsername(),         //  정적 메소드 활용??
-                        schedule.getCreatedAt(),
-                        schedule.getModifiedAt()
-                );
-                scheduleGetAllResponses.add(scheduleGetAllResponse);
-            }
-            return scheduleGetAllResponses;
-        }
-        // authorId 없으면 전체 일정 반환
+        /**
+         * 수정 후 : authorId가 있으면 작성자별, 없으면 전체 조회
+         */
+        List<Schedule> schedules =
+                (userId == null) ? scheduleRepository.findAll()
+                        : scheduleRepository.findByUserId(userId);
 
-        for (Schedule schedule : schedules) {
-            ScheduleGetAllResponse scheduleGetAllResponse = new ScheduleGetAllResponse(
-                    schedule.getId(),
-                    schedule.getUser().getId(),
-                    schedule.getTitle(),
-                    schedule.getContent(),
-                    schedule.getUser().getUsername(),             //  정적 메소드 활용??
-                    schedule.getCreatedAt(),
-                    schedule.getModifiedAt()
-            );
-            scheduleGetAllResponses.add(scheduleGetAllResponse);
-        }
-        return scheduleGetAllResponses;
+        // DTO 변환 (정적 팩토리 사용)
+        return schedules.stream()
+                .map(ScheduleGetAllResponse::from)
+                .toList();
     }
 
-    /**
-     * 일정 단건 조회
-     *
-     * @param scheduleId
-     * @return
-     */
-
+    /** 일정 단건 조회 */
     @Transactional(readOnly = true)
     public ScheduleGetOneResponse findSchedule(long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
@@ -156,19 +169,11 @@ public class ScheduleService {
 //        return new ScheduleGetOneResponse.from(schedule);
 //    }
 
-    /**
-     * 일정 수정 (부분 업데이트)
-     * @param scheduleId
-     * @return
-     */
-
-    /**
-     * 일정 수정 (부분 업데이트)
-     */
+    /** 일정 수정 (부분 업데이트) */
     @Transactional
     public ScheduleGetOneResponse updateSchedule(long scheduleId, ScheduleUpdateRequest scheduleUpdateRequest) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new IllegalArgumentException("일정을 찾을 수 없습니다."));
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+                () -> new IllegalArgumentException("일정을 찾을 수 없습니다."));
 
         // 부분 업데이트 적용 ( null 이면 해당 필드는 수정 하지 않는다)
         // 규칙 : 제목 공란 금지
@@ -190,12 +195,7 @@ public class ScheduleService {
         return ScheduleGetOneResponse.from(schedule);
     }
 
-    /**
-     * 일정 삭제
-     *
-     * @param scheduleId
-     */
-
+    /** 일정 삭제 */
     @Transactional
     // version 1
     public void deleteSchedule(long scheduleId) {

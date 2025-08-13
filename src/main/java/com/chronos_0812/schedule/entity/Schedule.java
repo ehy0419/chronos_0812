@@ -9,11 +9,9 @@ import lombok.NoArgsConstructor;
 
 /**
  * Lv1 요구사항:
- * - 작성 유저명(author), 할일 제목(title), 할일 내용(content), 작성일(createdAt), 수정일(updatedAt)
- * - 작성일/수정일은 BaseEntity(JPA Auditing)로 자동 관리
- **/
-
-/**
+ * - 작성 유저명(author), 할일 제목(title), 할일 내용(content), 작성일(createdAt), 수정일(modifiedAt)
+ * - 작성일 (createdAt)과 수정일 (modifiedAt)은 BaseEntity(JPA Auditing)로 자동 관리
+ *
  * Lv2 변경점:
  * - (이전) author:String  → (현재) user:User (ManyToOne)
  */
@@ -28,7 +26,7 @@ public class Schedule extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /**할일 제목 (필수, 최대 30자) */
+    /** 할일 제목 (필수, 최대 30자) */
     @Column(nullable = false, length = 30)
     private String title;
 
@@ -36,16 +34,14 @@ public class Schedule extends BaseEntity {
     @Column(nullable = false, length = 200)
     private String content;
 
-    /** 작성 유저명 (필수, 최대 30자) */
-    ///  LV1. 작성자명 - LV2. 사용자 연관관계(Many To one)
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)                      // 수가 많을 곳에 작성!
-    @JoinColumn(name = "user_id", nullable = false)  //FK       // nullable = false 이기때문에 getUser().getUsername() NPE 위험 낮음.
-    private User user;
-    // 수정 전 : private String user;
-    // 수정 후 : private User user;
-    // 작성 유저명 - 객체(id)로 참조
-    // db에 외래키(user_id)로 생성됨
+    /** 작성자 - LV1. String → LV2. User 연관관계(ManyToOne) */
+    // 수정 전 : private String author;
+    // 수정 후 : private User user;  (DB에는 user_id(FK)로 저장됨)
     // 결론 : 일정은 User 엔티티 고유식별자(id)를 FK로 참조하는 구조로 변경한다.
+    /** 작성 유저명 (필수, 최대 30자) */
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)        // 수가 많을 곳에 작성!
+    @JoinColumn(name = "user_id", nullable = false)             // @Column이 아니라 @JoinColumn 사용!
+    private User user;
 
     // 생성자 - 필수 필드 세팅
     public Schedule(String title, String content, User user) {
@@ -62,7 +58,7 @@ public class Schedule extends BaseEntity {
 //        this.content = content;
 //    }
 
-    /** 엔티티 내부의 변경점은 아래 같이 메서드로 감싸두면 추적이 쉽다. */
+    /** 엔티티 내부의 변경점은 아래와 같이 메서드로 나눠두면 추적이 쉽다. */
     // 2nd. 나눠서
     // 부분 수정 메서드 1 - 일정 제목 변경
     public void updateTitle(String title) {

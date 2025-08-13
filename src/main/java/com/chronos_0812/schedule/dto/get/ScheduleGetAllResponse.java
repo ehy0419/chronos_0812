@@ -7,12 +7,8 @@ import java.time.LocalDateTime;
 
 /**
  * 목록 조회 응답 DTO
- * (필요 필드만 노출)
- */
-
-/**
- * 단건 조회 응답 DTO
  * Lv2. userId, username 수정
+ * (필요 필드만 노출)
  */
 
 @Getter
@@ -33,7 +29,8 @@ public class ScheduleGetAllResponse {       ///  전체 조회 응답
             String title,
             String content,
             LocalDateTime createdAt,
-            LocalDateTime modifiedAt) {
+            LocalDateTime modifiedAt
+    ) {
         this.id = id;
         this.userId = userId;
         this.username = username;
@@ -43,14 +40,29 @@ public class ScheduleGetAllResponse {       ///  전체 조회 응답
         this.modifiedAt = modifiedAt;
     }
 
+    /** form() 매개변수?? 순서 변경 */
     // 정적 팩토리 : 엔티티 -> DTO 매핑 팩토리
+    // 수정 전(버그): (id, userId, title, content, username, ...)
+//    public static ScheduleGetAllResponse from(Schedule schedule) {
+//        return new ScheduleGetAllResponse(
+//                schedule.getId(),
+//                schedule.getUser().getId(),
+//                schedule.getTitle(),
+//                schedule.getContent(),
+//                schedule.getUser().getUsername(),
+//                schedule.getCreatedAt(),
+//                schedule.getModifiedAt()
+//        );
+//    }
+
+    // 수정 후(정상): (id, userId, username, title, content, ...)
     public static ScheduleGetAllResponse from(Schedule schedule) {
         return new ScheduleGetAllResponse(
                 schedule.getId(),
                 schedule.getUser().getId(),
+                schedule.getUser().getUsername(), // ← 위치 중요!
                 schedule.getTitle(),
                 schedule.getContent(),
-                schedule.getUser().getUsername(),
                 schedule.getCreatedAt(),
                 schedule.getModifiedAt()
         );
