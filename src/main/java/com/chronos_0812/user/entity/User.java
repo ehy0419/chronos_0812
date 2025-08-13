@@ -1,6 +1,6 @@
 package com.chronos_0812.user.entity;
 
-import com.chronos_0812.common.base.BaseEntity;
+import com.chronos_0812.common.config.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -8,13 +8,9 @@ import lombok.NoArgsConstructor;
 
 /**
  * Lv2: 유저 모델
- * - 필수: username, email (+ BaseEntity의 createdAt/updatedAt)
+ * - 필수: username, email (+ BaseEntity의 createdAt/modifiedAt)
  * - email UNIQUE 제약
  * - 비밀번호는 Lv3에서 추가 예정
- *
- * <주의>
- * 이미 프로젝트에 password 필드가 있다면 Lv3 전까지는 nullable=true 로 완화하거나, 컨트롤러에서 임시 값 세팅하세요.
- * </주의>
  */
 
 /**
@@ -43,7 +39,7 @@ public class User extends BaseEntity {
     private String email;
 
     /** 비밀번호 (필수, 최대30자, 도전에서 암호화) */
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 30)
     private String password;
 
     public User(String username, String email, String password) {
@@ -60,7 +56,7 @@ public class User extends BaseEntity {
         this.email = email;
     }
 
-    /** 비밀번호 변경(추가 요구 시 사용) — Lv6에서 인코더 적용 예정 */
+    /** 비밀번호 변경(추가 요구 시 사용) —>>>  Lv.6에서 인코더 적용 예정 */
     public void changePassword(String newPassword) {
         this.password = newPassword;
     }

@@ -20,6 +20,7 @@ public class UserGetOneResponse {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
+    // 정적 팩토리 from
     public static UserGetOneResponse from(User user) {
         return UserGetOneResponse.builder()
                 .id(user.getId())

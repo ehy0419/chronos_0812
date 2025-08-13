@@ -1,6 +1,6 @@
 package com.chronos_0812.schedule.entity;
 
-import com.chronos_0812.common.base.BaseEntity;
+import com.chronos_0812.common.config.BaseEntity;
 import com.chronos_0812.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

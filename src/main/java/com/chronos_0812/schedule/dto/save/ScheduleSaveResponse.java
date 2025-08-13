@@ -26,8 +26,12 @@ public class ScheduleSaveResponse {
             Long id,
             String title,
             String content,
+
+            // 수정 전 : authorId / authorName
+            // 수정 후 : userId / username
             Long userId,
             String userName,
+
             LocalDateTime createdAt,
             LocalDateTime modifiedAt
     ) {

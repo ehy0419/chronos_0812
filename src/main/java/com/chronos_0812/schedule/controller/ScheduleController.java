@@ -56,6 +56,7 @@ public class ScheduleController {
     @GetMapping
     public ResponseEntity<List<ScheduleGetAllResponse>> getAllSchedules(
             @RequestParam(value = "userId", required = false) Long userId
+            ///  쿼리 파라미터 변경 ///
             // 수정 전 : @RequestBody(required = false) String user
             // 수정 후 : @RequestParam(value = "userId", required = false) Long userId
             // 수정 이유 : GET에 @RequestBody 사용 제거: 조회 필터는 @RequestParam이 적절

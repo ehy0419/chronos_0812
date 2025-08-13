@@ -3,6 +3,7 @@ package com.chronos_0812.user.service;
 import com.chronos_0812.user.dto.get.UserGetAllResponse;
 import com.chronos_0812.user.dto.get.UserGetOneResponse;
 import com.chronos_0812.user.dto.save.UserSaveRequest;
+import com.chronos_0812.user.dto.save.UserSaveResponse;
 import com.chronos_0812.user.dto.update.UserUpdateRequest;
 import com.chronos_0812.user.entity.User;
 import com.chronos_0812.user.repository.UserRepository;
@@ -17,6 +18,7 @@ import java.util.List;
  * Lv3: password 저장 로직 포함
  * - 현재는 평문 저장 (테스트/학습용)
  * Lv6에서 PasswordEncoder 주입 예정.
+ * PasswordEncoder 참고 코드는 노션 과제 발제에서 확인.
  */
 
 @Service
@@ -27,22 +29,56 @@ public class UserService {
     private final UserRepository userRepository;
 
     /** 회원가입 및 유저 생성 */
+
+    // 수정 전
+    // public Long save(UserSaveRequest userSaveRequest) {
+    // 수정 이유
+    // Long id 만 반환하는 것이 아니라 UserSaveResponse DTO로 반환해서
+    // 다른 정보도 전달이 가능, 비밀번호는 제외!
+    // 수정 후
     @Transactional
-    public Long save(UserSaveRequest userSaveRequest) {
-        if (userSaveRequest.getUsername() == null || userSaveRequest.getUsername().trim().isEmpty()) {
+    public UserSaveResponse save(UserSaveRequest userSaveRequest) {
+        // 수정 전: username/email만 검사
+        if (userSaveRequest.getUsername() == null || userSaveRequest.getUsername().trim().isEmpty()
+        ) {
             throw new IllegalArgumentException("유저명은 필수입니다.");
         }
-        if (userSaveRequest.getEmail() == null || userSaveRequest.getEmail().trim().isEmpty()) {
+        if (userSaveRequest.getEmail() == null || userSaveRequest.getEmail().trim().isEmpty()
+        ) {
             throw new IllegalArgumentException("이메일은 필수입니다.");
         }
-        if (userRepository.existsByEmail(userSaveRequest.getEmail())) {
-            throw new IllegalStateException("이미 사용 중인 이메일입니다.");
+
+        // 수정 후: password도 검사 (nullable=false 이므로 필수)
+        if (userSaveRequest.getPassword() == null || userSaveRequest.getPassword().trim().isEmpty()
+        ) {
+            throw new IllegalArgumentException("비밀번호는 필수입니다.");
+        }
+
+        if (userRepository.existsByEmail(userSaveRequest.getEmail())
+        ) {
+            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
         }
 
         ///  암호화 ///
-        // Lv6에서: String encoded = passwordEncoder.encode(req.getPassword());
-        User user = new User(userSaveRequest.getUsername(), userSaveRequest.getEmail(),  userSaveRequest.getPassword());
-        return userRepository.save(user).getId();
+        // Lv6에서: String encoded = passwordEncoder.encode(userSaveRequest.getPassword());
+
+        // 수정 전 : return saved.getId();
+//        User user = new User(
+//                userSaveRequest.getUsername(),
+//                userSaveRequest.getEmail(),
+//                userSaveRequest.getPassword()
+//        );
+//        return userRepository.save(user).getId();
+
+        // 수정 후 응답 DTO로 변환
+        User saved = userRepository.save(
+                new User(
+                        userSaveRequest.getUsername(),
+                        userSaveRequest.getEmail(),
+                        userSaveRequest.getPassword()
+                )
+        );
+        return UserSaveResponse.from(saved);
     }
 
     /** 유저 전체 조회 */
@@ -56,9 +92,9 @@ public class UserService {
     /** 유저 단건 조회 */
     @Transactional(readOnly = true)
     public UserGetOneResponse findOne(Long id) {
-        User u = userRepository.findById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다. id=" + id));
-        return UserGetOneResponse.from(u);
+        return UserGetOneResponse.from(user);
     }
 
     /** 유저 수정
@@ -73,12 +109,13 @@ public class UserService {
             throw new IllegalArgumentException("이메일은 필수입니다.");
         }
 
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다. id=" + id));
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("유저가 존재하지 않습니다. id=" + id));
 
         // 이메일이 바뀌는 경우 중복 방지
-        if (!user.getEmail().equals(userUpdateRequest.getEmail()) && userRepository.existsByEmail(userUpdateRequest.getEmail())) {
-            throw new IllegalStateException("이미 사용 중인 이메일입니다.");
+        if (!user.getEmail().equals(userUpdateRequest.getEmail())
+                && userRepository.existsByEmail(userUpdateRequest.getEmail())) {
+            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
         }
 
         user.updateUsername(userUpdateRequest.getUsername());

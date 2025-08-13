@@ -28,7 +28,7 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
 
-    /** 일정 생성 */
+    /** 일정 저장, 생성 */
     @Transactional
     public ScheduleSaveResponse save(ScheduleSaveRequest scheduleSaveRequest) {
         // 유효성 검사는 컨트롤러 @Valid 에서 하며
@@ -144,7 +144,8 @@ public class ScheduleService {
          * 수정 후 : authorId가 있으면 작성자별, 없으면 전체 조회
          */
         List<Schedule> schedules =
-                (userId == null) ? scheduleRepository.findAll()
+                (userId == null)
+                        ? scheduleRepository.findAll()
                         : scheduleRepository.findByUserId(userId);
 
         // DTO 변환 (정적 팩토리 사용)
