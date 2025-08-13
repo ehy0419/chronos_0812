@@ -7,7 +7,6 @@ import com.chronos_0812.auth.session.SessionContainer;
 import com.chronos_0812.auth.session.SessionUser;
 import com.chronos_0812.user.dto.save.UserSaveRequest;
 import com.chronos_0812.user.dto.save.UserSaveResponse;
-import com.chronos_0812.user.entity.User;
 import com.chronos_0812.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
