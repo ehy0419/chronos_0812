@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
  * Lv1 요구사항:
  * - 작성 유저명(author), 할일 제목(title), 할일 내용(content), 작성일(createdAt), 수정일(updatedAt)
  * - 작성일/수정일은 BaseEntity(JPA Auditing)로 자동 관리
- */
+ **/
 
 /**
  * Lv2 변경점:
