@@ -1,20 +1,22 @@
 package com.chronos_0812.auth.service;
 
+import com.chronos_0812.auth.dto.LoginRequest;
+import com.chronos_0812.auth.dto.LoginResponse;
 import com.chronos_0812.auth.session.SessionUser;
 import com.chronos_0812.common.config.PasswordEncoder;
 import com.chronos_0812.user.entity.User;
 import com.chronos_0812.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * 로그인 인증 인가??
  * LoginRequest의 필드
  * private String email;
  * private String password;
- *
- *
  * */
 
 ///  AuthoController 에서 loginService.authenticate 문제..
@@ -25,19 +27,34 @@ public class LoginService {
 
     ///  참고 UserService
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;          // 비밀번호 암호화 추가
+//    private final PasswordEncoder passwordEncoder;          // 비밀번호 암호화 추가
 
-    @Transactional
-    public SessionUser authenticate(String email, String password) {
-        User user = userRepository.findByEmail(email).orElse(null);
-
-        if (user==null) { return null; }
-
-        if (!user.getPassword().equals(password)) { return null; }
-        SessionUser sessionUser = new SessionUser();
-
-        return sessionUser;
+    @Transactional(readOnly = true)
+    public LoginResponse login(LoginRequest loginRequest) {
+        User user = userRepository.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.UNAUTHORIZED)
+        );
+        userRepository.save(user);
+        return new LoginResponse(user.getId(), user.getUsername());
     }
+
+//    @Transactional
+//    public AuthResponse signup(AuthRequest request) {
+//        User user = new User(request.getEmail(), request.getPassword());
+//        userRepository.save(user);
+//        return new AuthResponse(user.getId());
+//    }
+
+//    public SessionUser authenticate(String email, String password) {
+//        User user = userRepository.findByEmail(email).orElse(null);
+//
+//        if (user==null) { return null; }
+//
+//        if (!user.getPassword().equals(password)) { return null; }
+//        SessionUser sessionUser = new SessionUser();
+//
+//        return sessionUser;
+//    }
 
     ///  비교하기
     // .orElse()

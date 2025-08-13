@@ -15,13 +15,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 회원가입 + 로그린 + 로그나웃 전용 API
  * - Lv. 3에서 /auth/signup 구현
  * - POST /auth/signup
+ *
  * - Lv.4에서 /auth/login 추가 예정
  * - POST /auth/login
  * - POST /auth/logout
@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+//@RequestMapping("/auth")
 public class AuthController {
 
     private final UserService userService;      // 회원가입
@@ -66,7 +66,8 @@ public class AuthController {
             @RequestBody LoginRequest loginRequest, HttpServletRequest httpServletRequest
     ) {
         // 세션 사용자 생성 & 저장
-        SessionUser sessionUser= loginService.authenticate(loginRequest.getEmail(),loginRequest.getPassword());
+        LoginResponse sessionUser= loginService.login(loginRequest);
+//        SessionUser sessionUser= loginService.login(loginRequest);
         if (sessionUser==null){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -78,7 +79,7 @@ public class AuthController {
         // 세션 타임아웃(선택): 30분
         httpsession.setMaxInactiveInterval(30 * 60);
 
-        return ResponseEntity.ok(new LoginResponse(sessionUser.getId(), sessionUser.getUsername()));
+        return ResponseEntity.ok(new LoginResponse(sessionUser.getUserId(),  sessionUser.getUsername()));
         // 수정 전 : return ResponseEntity.ok(new LoginResponse(user.getId(), user.getUsername()));
         // 수정 후 : return ResponseEntity.ok(new LoginResponse(sessionUser.getId(), sessionUser.getUsername()));
     }
