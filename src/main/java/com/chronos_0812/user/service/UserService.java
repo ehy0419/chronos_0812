@@ -1,5 +1,6 @@
 package com.chronos_0812.user.service;
 
+import com.chronos_0812.common.config.PasswordEncoder;
 import com.chronos_0812.user.dto.get.UserGetAllResponse;
 import com.chronos_0812.user.dto.get.UserGetOneResponse;
 import com.chronos_0812.user.dto.save.UserSaveRequest;
@@ -27,6 +28,7 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     /** 회원가입 및 유저 생성 */
 
@@ -63,7 +65,7 @@ public class UserService {
 
         ///  암호화 ///
         // Lv6에서: String encoded = passwordEncoder.encode(userSaveRequest.getPassword());
-        // PasswordEncoder 클래스 생성
+        // PasswordEncoder 클래스 생성 ->>>> 클래스 생성 확인
 
         /**  build.gradle 에 아래의 의존성을 추가
          implementation 'at.favre.lib:bcrypt:0.10.2'
@@ -87,7 +89,6 @@ public class UserService {
          }
          */
 
-
         // 수정 전 : return saved.getId();
 //        User user = new User(
 //                userSaveRequest.getUsername(),
@@ -96,15 +97,20 @@ public class UserService {
 //        );
 //        return userRepository.save(user).getId();
 
+        ///  lv.6 비밀번호 암호화(도전)
+        // 평문을 해시로 변경!
+        String encoded = passwordEncoder.encode(userSaveRequest.getPassword());
+
         // 수정 후 응답 DTO로 변환
         User saved = userRepository.save(
                 new User(
                         userSaveRequest.getUsername(),
                         userSaveRequest.getEmail(),
-                        userSaveRequest.getPassword()
+//                        userSaveRequest.getPassword(),        //비밀번호 암호화 encoded
+                        encoded                                 //비밀번호 해시만 저장
                 )
         );
-        return UserSaveResponse.from(saved);
+        return UserSaveResponse.from(saved);                // 당연히,응답에 비번은 없음
     }
 
     /** 유저 전체 조회 */

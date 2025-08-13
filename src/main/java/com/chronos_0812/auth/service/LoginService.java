@@ -1,8 +1,7 @@
 package com.chronos_0812.auth.service;
 
-import com.chronos_0812.auth.dto.LoginRequest;
-import com.chronos_0812.auth.dto.LoginResponse;
 import com.chronos_0812.auth.session.SessionUser;
+import com.chronos_0812.common.config.PasswordEncoder;
 import com.chronos_0812.user.entity.User;
 import com.chronos_0812.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,18 +23,23 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class LoginService {
 
+    ///  참고 UserService
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;          // 비밀번호 암호화 추가
 
     @Transactional
     public SessionUser authenticate(String email, String password) {
         User user = userRepository.findByEmail(email).orElse(null);
+
         if (user==null) { return null; }
+
         if (!user.getPassword().equals(password)) { return null; }
         SessionUser sessionUser = new SessionUser();
+
         return sessionUser;
     }
 
-    ///  비교
+    ///  비교하기
     // .orElse()
     // .orElseThrow()
 
