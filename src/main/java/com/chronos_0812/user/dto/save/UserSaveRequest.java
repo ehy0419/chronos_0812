@@ -24,6 +24,7 @@ public class UserSaveRequest {
     private String username;
     private String email;
 
+    /// 비밀번호는 요청 '받기'만 하자 ///
     // 수정 전: 평범한 필드 (String password) → 응답/로그에 노출 가능성 높음
     // 수정 후: WRITE_ONLY + ToString.Exclude 로 응답/로그 비노출
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)      // 응답 JSON에 안 나감

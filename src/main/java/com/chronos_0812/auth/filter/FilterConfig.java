@@ -17,9 +17,9 @@ public class FilterConfig {
     @Bean
     public FilterRegistrationBean authFilter() {
         FilterRegistrationBean<Filter> filterRegistrationBean = new FilterRegistrationBean<>();
-        filterRegistrationBean.setFilter(new AuthFilter()); // Filter 등록
-        filterRegistrationBean.addUrlPatterns("/*"); // 전체 URL에 Filter 적용
-//        filterRegistrationBean.setOrder(1);
+        filterRegistrationBean.setFilter(new AuthFilter());     // Filter 등록
+        filterRegistrationBean.addUrlPatterns("/*");            // 전체 URL에 Filter 적용
+        filterRegistrationBean.setOrder(1);                     // 제일 먼저 실행되도록 (번호가 낮을수록 먼저 실행)
         return filterRegistrationBean;
     }
 }
