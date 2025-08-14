@@ -138,26 +138,28 @@ src/main/java/com/chronos_0812
 
 ```mermaid
 erDiagram
+    %% 관계
     USER ||--o{ SCHEDULE : writes
 
+    %% 엔티티
     USER {
-        BIGINT id PK
-        VARCHAR(30) username
-        VARCHAR(100) email UNIQUE
-        VARCHAR(100) password
+        BIGINT id
+        VARCHAR username
+        VARCHAR email
+        VARCHAR password
         DATETIME createdAt
         DATETIME modifiedAt
     }
 
     SCHEDULE {
-        BIGINT id PK
-        VARCHAR(30) title
-        VARCHAR(200) content
-        BIGINT user_id FK
+        BIGINT id
+        VARCHAR title
+        VARCHAR content
+        BIGINT user_id
         DATETIME createdAt
         DATETIME modifiedAt
     }
-    }
+
 ```
 **VARCHAR(100) password**: BCrypt hash, 응답/로그 미노출  
 **DATETIME createdAt**: 작성한 사람  
