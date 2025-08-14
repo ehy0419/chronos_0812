@@ -180,6 +180,7 @@ ERDiagram
   "timestamp": "2025-08-14T10:00:00"
 }
 ```
+// 기대했던 응답이지만 포스트맨 이용과 URL 숙지를 등한시해서 
 
 ### 예외 처리 확인
 - `IllegalArgumentException` → **400 Bad Request**
