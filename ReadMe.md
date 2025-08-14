@@ -157,7 +157,7 @@ erDiagram
         DATETIME createdAt
         DATETIME modifiedAt
     }
-
+    }
 ```
 **VARCHAR(100) password**: BCrypt hash, 응답/로그 미노출  
 **DATETIME createdAt**: 작성한 사람  
