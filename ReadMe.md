@@ -137,7 +137,7 @@ src/main/java/com/chronos_0812
 ## ERD (Entity Relationship Diagram)
 
 ```mermaid
-ERDiagram
+erDiagram
     USER ||--o{ SCHEDULE : writes
 
     USER {
