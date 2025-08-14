@@ -69,7 +69,7 @@ import java.io.IOException;
 @Slf4j                                              // 로그 작성 어노테이션
 public class AuthFilter implements Filter {
     // 인증을 하지 않아도될 URL Path 배열
-    private static final String[] WHITE_LIST = {"/", "/signup", "/login"};
+    private static final String[] WHITE_LIST = {"/", "/signup", "/login"};  // filter URL 변경
 
     @Override
     public void doFilter(                           // 실제 필터링 작업을 수행하는 주요 메소드로 필터가 처리할 작업을 정의
