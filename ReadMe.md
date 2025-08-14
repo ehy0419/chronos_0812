@@ -144,20 +144,24 @@ erDiagram
         BIGINT id PK
         VARCHAR(30) username
         VARCHAR(100) email UNIQUE
-        VARCHAR(100) password   // BCrypt hash, 응답/로그 미노출
-        DATETIME createdAt      // DATEBY 는 작성한 사람
-        DATETIME modifiedAt     // DATETIME 은 작성한 시각
+        VARCHAR(100) password
+        DATETIME createdAt
+        DATETIME modifiedAt
     }
 
     SCHEDULE {
         BIGINT id PK
         VARCHAR(30) title
         VARCHAR(200) content
-        BIGINT user_id FK       // -> USER.id
+        BIGINT user_id FK
         DATETIME createdAt
         DATETIME modifiedAt
     }
 ```
+**VARCHAR(100) password**: BCrypt hash, 응답/로그 미노출  
+**DATETIME createdAt**: 작성한 사람  
+**(DATEBY) modifiedAt**: 작성한 시각
+
 ---
 
 ## 수정 및 추가 도전과제
